@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사진·영상·AI 창작 동호회 — 회원 모집</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Noto Sans KR', sans-serif; color: #1e293b; background: #fff; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,.07);
+      padding: 0 24px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 15px; font-weight: 700; color: #1e293b;
+    }
+    .nav-logo span { font-size: 22px; }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-links a { font-size: 14px; color: #64748b; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: #2563eb; }
+    .nav-cta {
+      background: #2563eb; color: #fff !important;
+      padding: 8px 18px; border-radius: 8px;
+      font-weight: 700 !important; font-size: 13px !important;
+      transition: background .2s !important;
+    }
+    .nav-cta:hover { background: #1d4ed8 !important; color: #fff; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(150deg, #0f172a 0%, #1e3a5f 45%, #14532d 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 100px 24px 60px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 50%, rgba(37,99,235,.25) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 80% 30%, rgba(20,83,45,.3) 0%, transparent 70%);
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 20px; padding: 6px 16px;
+      font-size: 13px; color: #94a3b8; margin-bottom: 28px;
+      position: relative; z-index: 1;
+    }
+    .hero-badge .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 6px #4ade80;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: .4; }
+    }
+    .hero h1 {
+      font-size: clamp(32px, 6vw, 60px);
+      font-weight: 900; color: #fff;
+      line-height: 1.15; letter-spacing: -1px;
+      margin-bottom: 16px; position: relative; z-index: 1;
+    }
+    .hero h1 em { color: #60a5fa; font-style: normal; }
+    .hero .sub {
+      font-size: clamp(15px, 2.5vw, 20px);
+      color: #94a3b8; margin-bottom: 40px;
+      line-height: 1.7; max-width: 520px;
+      position: relative; z-index: 1;
+    }
+    .hero-btns {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: center; position: relative; z-index: 1;
+      margin-bottom: 60px;
+    }
+    .btn-primary {
+      background: #2563eb; color: #fff;
+      padding: 15px 32px; border-radius: 12px;
+      font-size: 16px; font-weight: 700;
+      box-shadow: 0 6px 20px rgba(37,99,235,.5);
+      transition: all .2s; display: inline-block;
+    }
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-2px); }
+    .btn-ghost {
+      background: rgba(255,255,255,.1);
+      border: 1.5px solid rgba(255,255,255,.25);
+      color: #e2e8f0; padding: 14px 28px; border-radius: 12px;
+      font-size: 15px; font-weight: 600;
+      transition: all .2s; display: inline-block;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.18); }
+    .hero-stats {
+      display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;
+      position: relative; z-index: 1;
+    }
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 32px; font-weight: 900; color: #fff; }
+    .stat-num span { font-size: 18px; color: #60a5fa; }
+    .stat-label { font-size: 13px; color: #64748b; margin-top: 2px; }
+    .hero-icons {
+      display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 48px; position: relative; z-index: 1;
+    }
+    .hero-icon-card {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 16px; padding: 18px 22px;
+      text-align: center; min-width: 90px;
+      backdrop-filter: blur(8px);
+    }
+    .hero-icon-card .ic { font-size: 28px; margin-bottom: 6px; }
+    .hero-icon-card .ic-name { font-size: 12px; color: #94a3b8; font-weight: 500; }
+
+    /* ── Section Base ── */
+    section { padding: 80px 24px; }
+    .section-inner { max-width: 1080px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block;
+      background: #eff6ff; color: #2563eb;
+      border-radius: 6px; padding: 4px 12px;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: .5px; margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 800; color: #1e293b;
+      margin-bottom: 12px; line-height: 1.3;
+    }
+    .section-desc {
+      font-size: 16px; color: #64748b;
+      line-height: 1.8; max-width: 560px; margin-bottom: 48px;
+    }
+
+    /* ── Activities ── */
+    #activities { background: #f8fafc; }
+    .act-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .act-card {
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px; padding: 28px 24px;
+      transition: all .25s;
+    }
+    .act-card:hover {
+      border-color: #2563eb;
+      box-shadow: 0 8px 24px rgba(37,99,235,.12);
+      transform: translateY(-3px);
+    }
+    .act-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; margin-bottom: 16px;
+    }
+    .act-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .act-card p  { font-size: 14px; color: #64748b; line-height: 1.7; margin-bottom: 14px; }
+    .act-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .act-tag {
+      background: #f1f5f9; border-radius: 6px;
+      padding: 3px 10px; font-size: 11px;
+      color: #475569; font-weight: 500;
+    }
+
+    /* ── Schedule ── */
+    .sche-list { display: flex; flex-direction: column; gap: 16px; max-width: 680px; }
+    .sche-item {
+      display: flex; align-items: flex-start; gap: 16px;
+      background: #fff; border: 1.5px solid #e2e8f0;
+      border-radius: 14px; padding: 20px;
+    }
+    .sche-date {
+      min-width: 60px; text-align: center;
+      background: #eff6ff; border-radius: 10px;
+      padding: 8px 6px;
+    }
+    .sche-date .month { font-size: 11px; color: #2563eb; font-weight: 700; }
+    .sche-date .day   { font-size: 22px; font-weight: 900; color: #1e3a5f; line-height: 1; }
+    .sche-info h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .sche-info p  { font-size: 13px; color: #64748b; }
+    .sche-badge {
+      margin-left: auto; align-self: flex-start;
+      font-size: 11px; font-weight: 700;
+      border-radius: 6px; padding: 3px 10px;
+    }
+    .sche-badge.open   { background: #dcfce7; color: #166534; }
+    .sche-badge.soon   { background: #fef9c3; color: #854d0e; }
+    .sche-badge.closed { background: #f1f5f9; color: #94a3b8; }
+
+    /* ── Gallery ── */
+    #gallery { background: #f8fafc; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto auto;
+      gap: 12px;
+    }
+    .gallery-item {
+      border-radius: 12px; overflow: hidden;
+      aspect-ratio: 1; position: relative;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      transition: transform .25s;
+      cursor: pointer;
+    }
+    .gallery-item:hover { transform: scale(1.03); }
+    .gallery-item.wide  { grid-column: span 2; aspect-ratio: 2/1; }
+    .gallery-item.tall  { grid-row: span 2; aspect-ratio: 1/2; }
+    .gallery-label {
+      position: absolute; bottom: 10px; left: 12px;
+      font-size: 12px; font-weight: 600; color: rgba(255,255,255,.9);
+      text-shadow: 0 1px 4px rgba(0,0,0,.4);
+    }
+
+    /* ── Testimonials ── */
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .testi-card {
+      background: #fff; border: 1.5px solid #e2e8f0;
+      border-radius: 16px; padding: 24px;
+    }
+    .testi-stars { color: #fbbf24; font-size: 14px; margin-bottom: 12px; }
+    .testi-text  { font-size: 14px; color: #374151; line-height: 1.75; margin-bottom: 16px; }
+    .testi-author { display: flex; align-items: center; gap: 10px; }
+    .testi-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .testi-name  { font-size: 13px; font-weight: 700; }
+    .testi-role  { font-size: 12px; color: #94a3b8; }
+
+    /* ── FAQ ── */
+    #faq { background: #f8fafc; }
+    .faq-list { max-width: 680px; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item {
+      background: #fff; border: 1.5px solid #e2e8f0;
+      border-radius: 12px; overflow: hidden;
+    }
+    .faq-q {
+      padding: 18px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; font-size: 14px; font-weight: 600;
+      user-select: none;
+    }
+    .faq-q:hover { background: #f8fafc; }
+    .faq-chevron { transition: transform .3s; font-size: 12px; color: #94a3b8; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height .35s ease, padding .3s;
+      font-size: 14px; color: #64748b; line-height: 1.75;
+      padding: 0 20px;
+    }
+    .faq-item.open .faq-a { max-height: 200px; padding: 0 20px 18px; }
+
+    /* ── CTA Banner ── */
+    #cta {
+      background: linear-gradient(135deg, #1e293b 0%, #1e3a8a 50%, #14532d 100%);
+      text-align: center; padding: 80px 24px;
+    }
+    #cta h2 { font-size: clamp(24px, 4vw, 40px); font-weight: 900; color: #fff; margin-bottom: 12px; }
+    #cta p  { font-size: 16px; color: #94a3b8; margin-bottom: 36px; }
+    #cta .cta-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .btn-white {
+      background: #fff; color: #1e3a8a;
+      padding: 15px 32px; border-radius: 12px;
+      font-size: 16px; font-weight: 800;
+      box-shadow: 0 6px 20px rgba(0,0,0,.3);
+      transition: all .2s; display: inline-block;
+    }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.35); }
+
+    /* ── Footer ── */
+    footer {
+      background: #0f172a; color: #64748b;
+      padding: 40px 24px 28px;
+      text-align: center;
+    }
+    .footer-logos { display: flex; justify-content: center; gap: 14px; margin-bottom: 16px; }
+    .f-logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    footer p { font-size: 13px; margin-bottom: 6px; }
+    footer .copy { font-size: 12px; color: #334155; margin-top: 12px; }
+
+    /* ── Scroll Animation ── */
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery-item.wide { grid-column: span 2; }
+      .gallery-item.tall { grid-row: span 1; aspect-ratio: 1; }
+      .hero-stats { gap: 24px; }
+    }
+    @media (max-width: 480px) {
+      section { padding: 56px 16px; }
+      .hero { padding: 80px 16px 48px; }
+      .hero h1 { font-size: 28px; }
+      .act-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <div class="nav-logo">
+    <span>📷</span>
+    사진·영상·AI 창작 동호회
+  </div>
+  <div class="nav-links">
+    <a href="#activities">활동 소개</a>
+    <a href="#schedule">일정</a>
+    <a href="#gallery">갤러리</a>
+    <a href="#faq">FAQ</a>
+    <a href="signup_form.html" class="nav-cta">회원 가입 →</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero" id="home">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    2025년 하반기 회원 모집 중
+  </div>
+  <h1>렌즈와 <em>AI</em>로<br>창작의 경계를<br>함께 넓혀요</h1>
+  <p class="sub">사진 촬영부터 영상 편집, 생성형 AI 활용까지<br>다양한 분야의 크리에이터들이 모이는 곳</p>
+
+  <div class="hero-icons">
+    <div class="hero-icon-card"><div class="ic">📷</div><div class="ic-name">사진 촬영</div></div>
+    <div class="hero-icon-card"><div class="ic">🎬</div><div class="ic-name">영상 제작</div></div>
+    <div class="hero-icon-card"><div class="ic">✨</div><div class="ic-name">AI 이미지</div></div>
+    <div class="hero-icon-card"><div class="ic">🤖</div><div class="ic-name">AI 영상</div></div>
+    <div class="hero-icon-card"><div class="ic">🚁</div><div class="ic-name">드론 촬영</div></div>
+    <div class="hero-icon-card"><div class="ic">🗺️</div><div class="ic-name">출사·여행</div></div>
+  </div>
+
+  <div class="hero-btns">
+    <a href="signup_form.html" class="btn-primary">✍️ 지금 가입 신청하기</a>
+    <a href="#activities" class="btn-ghost">활동 둘러보기 ↓</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">120<span>+</span></div>
+      <div class="stat-label">현재 회원 수</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">48<span>회</span></div>
+      <div class="stat-label">누적 모임 횟수</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">6<span>개</span></div>
+      <div class="stat-label">활동 분야</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3<span>년</span></div>
+      <div class="stat-label">운영 기간</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Activities ── -->
+<section id="activities">
+  <div class="section-inner">
+    <div class="reveal">
+      <span class="section-tag">ACTIVITIES</span>
+      <h2 class="section-title">함께하는 창작 활동</h2>
+      <p class="section-desc">취미로 시작해서 전문가로 성장하는 다양한 활동을 제공합니다.</p>
+    </div>
+    <div class="act-grid">
+
+      <div class="act-card reveal">
+        <div class="act-icon" style="background:#eff6ff">📷</div>
+        <h3>사진 촬영</h3>
+        <p>풍경·인물·스트릿 등 다양한 장르의 촬영 기법을 배우고, 정기 출사를 통해 실력을 쌓아요.</p>
+        <div class="act-tags">
+          <span class="act-tag">📸 포트폴리오 촬영</span>
+          <span class="act-tag">🌅 풍경 출사</span>
+          <span class="act-tag">👤 인물 스터디</span>
+        </div>
+      </div>
+
+      <div class="act-card reveal">
+        <div class="act-icon" style="background:#fdf4ff">🎬</div>
+        <h3>영상 제작</h3>
+        <p>촬영부터 편집까지 전 과정을 배워요. Premiere Pro, DaVinci Resolve 등 실전 워크숍을 진행합니다.</p>
+        <div class="act-tags">
+          <span class="act-tag">✂️ 편집 워크숍</span>
+          <span class="act-tag">🎵 음악 믹싱</span>
+          <span class="act-tag">📺 유튜브 채널</span>
+        </div>
+      </div>
+
+      <div class="act-card reveal">
+        <div class="act-icon" style="background:#f0fdf4">✨</div>
+        <h3>AI 이미지 생성</h3>
+        <p>Midjourney, FLUX, Stable Diffusion 등 최신 AI 도구 활용법을 함께 탐구하고 공유해요.</p>
+        <div class="act-tags">
+          <span class="act-tag">🖼️ Midjourney</span>
+          <span class="act-tag">⚡ FLUX</span>
+          <span class="act-tag">🎨 프롬프트 엔지니어링</span>
+        </div>
+      </div>
+
+      <div class="act-card reveal">
+        <div class="act-icon" style="background:#fff7ed">🤖</div>
+        <h3>AI 영상 제작</h3>
+        <p>Sora, Runway, Veo 등 최첨단 AI 영상 도구로 상상 속 장면을 영상으로 만들어요.</p>
+        <div class="act-tags">
+          <span class="act-tag">🎥 Sora</span>
+          <span class="act-tag">🛤️ Runway</span>
+          <span class="act-tag">🌊 Veo</span>
+        </div>
+      </div>
+
+      <div class="act-card reveal">
+        <div class="act-icon" style="background:#fef2f2">🚁</div>
+        <h3>드론 촬영</h3>
+        <p>공중에서 바라보는 특별한 시각으로 항공 사진·영상을 촬영하는 드론 비행 및 촬영 클래스.</p>
+        <div class="act-tags">
+          <span class="act-tag">🏔️ 항공 촬영</span>
+          <span class="act-tag">📡 드론 조종</span>
+          <span class="act-tag">🎯 FPV</span>
+        </div>
+      </div>
+
+      <div class="act-card reveal">
+        <div class="act-icon" style="background:#f0fdf4">🗺️</div>
+        <h3>출사·야외 활동</h3>
+        <p>매달 새로운 장소로 단체 출사를 떠나요. 일상에서 벗어나 아름다운 순간을 함께 담아요.</p>
+        <div class="act-tags">
+          <span class="act-tag">🌸 계절 출사</span>
+          <span class="act-tag">🏙️ 도시 스냅</span>
+          <span class="act-tag">🌊 자연 출사</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Schedule ── -->
+<section id="schedule">
+  <div class="section-inner">
+    <div class="reveal">
+      <span class="section-tag">SCHEDULE</span>
+      <h2 class="section-title">다가오는 모임 일정</h2>
+      <p class="section-desc">매월 다양한 활동을 정기적으로 진행하고 있어요.</p>
+    </div>
+
+    <div class="sche-list">
+      <div class="sche-item reveal">
+        <div class="sche-date"><div class="month">MAR</div><div class="day">22</div></div>
+        <div class="sche-info">
+          <h4>📷 봄 출사 — 윤중로 벚꽃 촬영</h4>
+          <p>여의도 윤중로 벚꽃 출사 · 오전 10시 집합 · 초보자 환영</p>
+        </div>
+        <span class="sche-badge open">모집 중</span>
+      </div>
+
+      <div class="sche-item reveal">
+        <div class="sche-date"><div class="month">MAR</div><div class="day">29</div></div>
+        <div class="sche-info">
+          <h4>✨ AI 이미지 워크숍 — Midjourney v7 실습</h4>
+          <p>최신 Midjourney v7 프롬프트 공유 및 실습 · 온라인 진행</p>
+        </div>
+        <span class="sche-badge open">모집 중</span>
+      </div>
+
+      <div class="sche-item reveal">
+        <div class="sche-date"><div class="month">APR</div><div class="day">05</div></div>
+        <div class="sche-info">
+          <h4>🎬 영상 편집 스터디 — DaVinci Resolve 컬러그레이딩</h4>
+          <p>컬러그레이딩 기법 공유 · 서울 마포 스터디룸 · 10명 제한</p>
+        </div>
+        <span class="sche-badge soon">마감 임박</span>
+      </div>
+
+      <div class="sche-item reveal">
+        <div class="sche-date"><div class="month">APR</div><div class="day">12</div></div>
+        <div class="sche-info">
+          <h4>🚁 드론 촬영 체험 — 한강공원</h4>
+          <p>드론 비행 기초 교육 + 한강 항공 촬영 · 드론 보유자 우선</p>
+        </div>
+        <span class="sche-badge soon">마감 임박</span>
+      </div>
+
+      <div class="sche-item reveal" style="opacity:.6">
+        <div class="sche-date"><div class="month">APR</div><div class="day">19</div></div>
+        <div class="sche-info">
+          <h4>🤖 AI 영상 실습 — Runway Gen-4 사용기 공유</h4>
+          <p>AI 영상 생성 도구 최신 사용 후기 및 실습 · 온라인</p>
+        </div>
+        <span class="sche-badge closed">예정</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Gallery ── -->
+<section id="gallery">
+  <div class="section-inner">
+    <div class="reveal">
+      <span class="section-tag">GALLERY</span>
+      <h2 class="section-title">회원들의 창작물</h2>
+      <p class="section-desc">우리 동호회 회원들이 만들어 낸 다양한 창작물을 소개합니다.</p>
+    </div>
+
+    <div class="gallery-grid reveal">
+      <div class="gallery-item wide" style="--c1:#0f172a;--c2:#1e3a8a">
+        <span>🌅</span>
+        <span class="gallery-label">윤중로 일출 촬영</span>
+      </div>
+      <div class="gallery-item" style="--c1:#14532d;--c2:#166534">
+        <span>🌿</span>
+        <span class="gallery-label">자연 매크로</span>
+      </div>
+      <div class="gallery-item tall" style="--c1:#1e3a5f;--c2:#0f4c81">
+        <span>🏙️</span>
+        <span class="gallery-label">도시 야경</span>
+      </div>
+      <div class="gallery-item" style="--c1:#7c2d12;--c2:#9a3412">
+        <span>🎨</span>
+        <span class="gallery-label">AI 아트워크</span>
+      </div>
+      <div class="gallery-item" style="--c1:#4c1d95;--c2:#5b21b6">
+        <span>✨</span>
+        <span class="gallery-label">Midjourney 작품</span>
+      </div>
+      <div class="gallery-item" style="--c1:#0c4a6e;--c2:#0369a1">
+        <span>🚁</span>
+        <span class="gallery-label">드론 항공 촬영</span>
+      </div>
+      <div class="gallery-item" style="--c1:#1a1a2e;--c2:#16213e">
+        <span>🎬</span>
+        <span class="gallery-label">단편 영상</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Testimonials ── -->
+<section id="testimonials">
+  <div class="section-inner">
+    <div class="reveal">
+      <span class="section-tag">TESTIMONIALS</span>
+      <h2 class="section-title">회원들의 한 마디</h2>
+      <p class="section-desc">먼저 가입한 회원들의 생생한 후기를 들어보세요.</p>
+    </div>
+
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"사진을 혼자 찍다가 외로웠는데, 여기서 같은 관심사를 가진 분들을 만나서 너무 좋아요. 출사 때마다 정말 많이 배웁니다!"</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#dbeafe">👨‍💼</div>
+          <div>
+            <div class="testi-name">김○○ 님</div>
+            <div class="testi-role">사진 입문 · 6개월차</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"AI 이미지 생성을 처음 접해봤는데 워크숍 한 번 듣고 완전히 빠졌어요. 매주 새로운 도구와 기법을 공유해주셔서 최고입니다."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#fce7f3">👩‍🎨</div>
+          <div>
+            <div class="testi-name">이○○ 님</div>
+            <div class="testi-role">AI 이미지 · 3개월차</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"드론 촬영에 관심이 많았는데 혼자 배우기가 막막했어요. 동호회 덕분에 체계적으로 배우고 멋진 항공 영상도 찍게 됐어요!"</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#d1fae5">👨‍💻</div>
+          <div>
+            <div class="testi-name">박○○ 님</div>
+            <div class="testi-role">드론 촬영 · 1년차</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq">
+  <div class="section-inner">
+    <div class="reveal">
+      <span class="section-tag">FAQ</span>
+      <h2 class="section-title">자주 묻는 질문</h2>
+      <p class="section-desc">가입 전에 궁금한 점을 확인하세요.</p>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>📷 카메라나 장비가 없어도 가입할 수 있나요?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">물론입니다! 스마트폰만 있어도 충분히 활동할 수 있어요. 사진·영상 장비가 없어도 AI 이미지·영상 분야에서 바로 시작하실 수 있습니다. 장비보다 창작에 대한 열정이 더 중요합니다.</div>
+      </div>
+
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>🔰 완전 초보자도 환영하나요?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">네, 입문자부터 고급자까지 모두 환영합니다! 수준별 스터디 그룹이 운영되며, 초보자를 위한 기초 워크숍도 별도로 진행해요. 부담 없이 지원해 주세요.</div>
+      </div>
+
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>💰 가입비나 활동비가 있나요?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">기본 온라인 활동은 무료입니다. 오프라인 출사나 스터디룸 대관 시 실비를 n분의 1로 부담하는 방식으로 운영합니다. 별도의 가입비나 회비는 없습니다.</div>
+      </div>
+
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>📅 모든 활동에 다 참여해야 하나요?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">자유롭게 참여하실 수 있어요! 관심 있는 활동에만 선택적으로 참여해도 됩니다. 의무 출석은 없으나, 6개월 이상 전혀 활동이 없으신 경우 휴면 회원으로 전환될 수 있습니다.</div>
+      </div>
+
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>⏳ 가입 신청 후 승인까지 얼마나 걸리나요?</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">운영진이 신청서를 검토 후 보통 1~2일 내에 이메일로 승인 안내를 드립니다. 승인 후 카카오톡 오픈채팅방 및 공유 채널 초대 링크를 보내드립니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA Banner ── -->
+<section id="cta">
+  <div class="section-inner reveal">
+    <h2>지금 바로 함께해요! 🎉</h2>
+    <p>렌즈와 AI로 창작의 경계를 함께 넓혀나갈 동료를 기다립니다.</p>
+    <div class="cta-btns">
+      <a href="signup_form.html" class="btn-white">✍️ 회원가입 신청하기</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-logos">
+    <div class="f-logo" style="background:#1e293b">📷</div>
+    <div class="f-logo" style="background:#0f4c81">🎬</div>
+    <div class="f-logo" style="background:#14532d">✨</div>
+  </div>
+  <p style="font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:6px">사진·영상·AI 창작 동호회</p>
+  <p>렌즈와 AI로 창작의 경계를 함께 넓혀요</p>
+  <p style="margin-top:8px">📧 문의: <a href="mailto:admin@example.com" style="color:#60a5fa">admin@example.com</a></p>
+  <p class="copy">© 2025 사진·영상·AI 창작 동호회. All rights reserved.</p>
+</footer>
+
+<script>
+  // ── FAQ 토글 ──
+  function toggleFaq(el) {
+    var item = el.parentElement;
+    item.classList.toggle("open");
+  }
+
+  // ── 스크롤 애니메이션 ──
+  var revealEls = document.querySelectorAll(".reveal");
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(function(el) { observer.observe(el); });
+
+  // ── 네비 active 하이라이트 ──
+  var sections = document.querySelectorAll("section[id]");
+  var navLinks = document.querySelectorAll(".nav-links a[href^='#']");
+  window.addEventListener("scroll", function() {
+    var pos = window.scrollY + 80;
+    sections.forEach(function(sec) {
+      if (pos >= sec.offsetTop && pos < sec.offsetTop + sec.offsetHeight) {
+        navLinks.forEach(function(a) {
+          a.style.color = a.getAttribute("href") === "#" + sec.id ? "#2563eb" : "";
+        });
+      }
+    });
+  });
+</script>
+</body>
+</html>
