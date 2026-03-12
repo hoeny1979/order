@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사진·영상·AI 창작 동호회 — 회원가입</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    /* ── Loading Overlay ── */
+    #loading-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,.85);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    #loading-overlay.active { display: flex; }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #2563eb;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading-overlay p { font-size: 15px; color: #64748b; font-weight: 500; }
+
+    /* ── Container ── */
+    .container { max-width: 640px; margin: 0 auto; }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #1e293b 0%, #0f4c81 60%, #14532d 100%);
+      border-radius: 20px;
+      padding: 40px 32px 36px;
+      text-align: center;
+      color: #fff;
+      margin-bottom: 28px;
+    }
+    .hero-logos { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+    .logo-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      backdrop-filter: blur(6px);
+    }
+    .logo-icon.camera  { background: rgba(30,41,59,.6); }
+    .logo-icon.video   { background: rgba(15,76,129,.6); }
+    .logo-icon.ai      { background: rgba(20,83,45,.6); }
+    .hero h1 { font-size: 22px; font-weight: 700; letter-spacing: -.3px; margin-bottom: 8px; }
+    .hero .slogan { font-size: 14px; color: #94a3b8; margin-bottom: 14px; }
+    .hero .desc { font-size: 13px; color: #cbd5e1; line-height: 1.7; margin-bottom: 18px; }
+    .hero-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+    .hero-tag {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px; color: #e2e8f0;
+    }
+
+    /* ── Progress Steps ── */
+    .steps-wrapper { margin-bottom: 24px; }
+    .steps {
+      display: flex; align-items: center;
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07);
+    }
+    .step-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+      position: relative;
+    }
+    .step-item:not(:last-child)::after {
+      content: '';
+      position: absolute; top: 16px; left: calc(50% + 18px);
+      width: calc(100% - 36px); height: 2px;
+      background: #e2e8f0;
+      transition: background .3s;
+    }
+    .step-item.done:not(:last-child)::after { background: #2563eb; }
+    .step-circle {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      background: #e2e8f0; color: #94a3b8;
+      transition: all .3s; z-index: 1;
+    }
+    .step-item.active .step-circle { background: #2563eb; color: #fff; box-shadow: 0 0 0 4px #dbeafe; }
+    .step-item.done .step-circle   { background: #2563eb; color: #fff; }
+    .step-item.done .step-circle::before { content: '✓'; }
+    .step-label { font-size: 11px; color: #94a3b8; font-weight: 500; }
+    .step-item.active .step-label { color: #2563eb; font-weight: 700; }
+    .step-item.done .step-label   { color: #2563eb; }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 18px; font-weight: 700;
+      color: #1e293b; margin-bottom: 6px;
+    }
+    .card-subtitle {
+      font-size: 13px; color: #64748b; margin-bottom: 24px; line-height: 1.6;
+    }
+
+    /* ── Interests Grid ── */
+    .interest-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .interest-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      position: relative;
+      user-select: none;
+    }
+    .interest-card:hover { border-color: #93c5fd; background: #eff6ff; }
+    .interest-card.selected {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+    .interest-card .check-icon {
+      display: none;
+      position: absolute; top: 6px; right: 6px;
+      width: 18px; height: 18px;
+      background: #2563eb; border-radius: 50%;
+      color: #fff; font-size: 10px;
+      align-items: center; justify-content: center;
+    }
+    .interest-card.selected .check-icon { display: flex; }
+    .interest-card .icon { font-size: 24px; margin-bottom: 6px; }
+    .interest-card .name { font-size: 12px; font-weight: 600; color: #1e293b; }
+    .interest-card .desc-text { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Skill Levels ── */
+    .skill-section { margin-bottom: 8px; }
+    .skill-section label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: #374151; margin-bottom: 8px;
+    }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-btn {
+      border: 1.5px solid #e2e8f0;
+      background: #fff;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px; font-family: inherit;
+      color: #374151; cursor: pointer;
+      transition: all .2s;
+    }
+    .skill-btn:hover { border-color: #93c5fd; color: #1d4ed8; }
+    .skill-btn.active { border-color: #2563eb; background: #2563eb; color: #fff; font-weight: 600; }
+
+    /* ── Form Fields ── */
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: #374151; margin-bottom: 6px;
+    }
+    .form-group label .required { color: #ef4444; margin-left: 2px; }
+    .form-group label .optional {
+      font-size: 11px; color: #94a3b8; font-weight: 400; margin-left: 4px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 14px; font-family: inherit;
+      color: #1e293b;
+      background: #fff;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+    .form-input.error { border-color: #ef4444; }
+    .form-input.success { border-color: #22c55e; }
+    .field-error { font-size: 11px; color: #ef4444; margin-top: 4px; display: none; }
+    .field-error.show { display: block; }
+    .form-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+    /* ── Password Strength ── */
+    .pw-strength-bar {
+      height: 4px; border-radius: 2px;
+      background: #e2e8f0; margin-top: 8px;
+      overflow: hidden;
+    }
+    .pw-strength-fill {
+      height: 100%; border-radius: 2px;
+      width: 0; transition: width .3s, background .3s;
+    }
+    .pw-strength-label { font-size: 11px; margin-top: 4px; }
+
+    /* ── Terms ── */
+    .terms-box {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      max-height: 96px;
+      overflow-y: auto;
+      font-size: 12px; color: #64748b;
+      line-height: 1.7;
+      margin-bottom: 16px;
+      background: #f8fafc;
+    }
+    .chk-all-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px;
+      background: #f0f9ff;
+      border: 1.5px solid #bae6fd;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    .chk-all-row label { font-size: 14px; font-weight: 700; color: #0369a1; cursor: pointer; }
+    .chk-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 4px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .chk-item:last-child { border-bottom: none; }
+    .chk-item label {
+      font-size: 13px; color: #374151; cursor: pointer; line-height: 1.5;
+    }
+    .chk-badge {
+      font-size: 10px; font-weight: 700;
+      padding: 1px 6px; border-radius: 4px; margin-left: 4px;
+    }
+    .chk-badge.req  { background: #fee2e2; color: #dc2626; }
+    .chk-badge.opt  { background: #e0f2fe; color: #0369a1; }
+    input[type="checkbox"] {
+      width: 18px; height: 18px; flex-shrink: 0;
+      accent-color: #2563eb; cursor: pointer; margin-top: 1px;
+    }
+
+    /* ── Summary ── */
+    .summary-section { margin-bottom: 20px; }
+    .summary-section h3 {
+      font-size: 13px; font-weight: 700; color: #64748b;
+      margin-bottom: 10px; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .summary-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .chip {
+      background: #eff6ff; border: 1.5px solid #bfdbfe;
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 12px; color: #1d4ed8; font-weight: 500;
+    }
+    .summary-table { width: 100%; border-collapse: collapse; }
+    .summary-table tr { border-bottom: 1px solid #f1f5f9; }
+    .summary-table td { padding: 8px 4px; font-size: 13px; }
+    .summary-table td:first-child { color: #94a3b8; width: 100px; }
+    .summary-table td:last-child { color: #1e293b; font-weight: 500; }
+
+    /* ── Buttons ── */
+    .btn-row {
+      display: flex; gap: 10px; margin-top: 8px;
+    }
+    .btn {
+      flex: 1; padding: 13px;
+      border-radius: 10px; font-size: 15px; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+      border: none; transition: all .2s;
+    }
+    .btn-prev { background: #f1f5f9; color: #64748b; }
+    .btn-prev:hover { background: #e2e8f0; }
+    .btn-next {
+      background: #2563eb; color: #fff;
+      box-shadow: 0 4px 14px rgba(37,99,235,.35);
+    }
+    .btn-next:hover { background: #1d4ed8; }
+    .btn-next:disabled { background: #93c5fd; box-shadow: none; cursor: not-allowed; }
+    .btn-submit {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: #fff; box-shadow: 0 4px 14px rgba(37,99,235,.4);
+    }
+    .btn-submit:hover { opacity: .92; }
+
+    /* ── Section Divider ── */
+    .section-divider {
+      height: 1px; background: #f1f5f9; margin: 20px 0;
+    }
+
+    /* ── Complete Screen ── */
+    #complete-screen {
+      display: none;
+      text-align: center;
+      background: #fff;
+      border-radius: 16px;
+      padding: 48px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    #complete-screen.active { display: block; }
+    .complete-logos { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; }
+    .complete-logo {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .complete-logo.camera { background: #1e293b; }
+    .complete-logo.video  { background: #0f4c81; }
+    .complete-logo.ai     { background: #14532d; }
+    #complete-screen h2 { font-size: 22px; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+    #complete-screen .sub { font-size: 14px; color: #64748b; margin-bottom: 28px; }
+    .complete-info {
+      background: #f8fafc; border-radius: 12px; padding: 20px;
+      text-align: left; margin-bottom: 24px;
+    }
+    .complete-info .ci-row {
+      display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px;
+    }
+    .complete-info .ci-label { color: #94a3b8; width: 80px; flex-shrink: 0; }
+    .complete-info .ci-val   { color: #1e293b; font-weight: 500; }
+    .complete-notice {
+      background: #eff6ff; border: 1.5px solid #bfdbfe;
+      border-radius: 10px; padding: 14px 16px;
+      font-size: 13px; color: #1d4ed8; line-height: 1.7;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      body { padding: 12px 10px 36px; }
+      .hero { padding: 28px 18px 24px; }
+      .hero h1 { font-size: 18px; }
+      .card { padding: 20px 16px; }
+      .interest-grid { grid-template-columns: repeat(2, 1fr); }
+      .btn-group { gap: 6px; }
+      .skill-btn { padding: 6px 10px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p>신청서를 제출하는 중...</p>
+</div>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-logos">
+      <div class="logo-icon camera">📷</div>
+      <div class="logo-icon video">🎬</div>
+      <div class="logo-icon ai">✨</div>
+    </div>
+    <h1>사진·영상·AI 창작 동호회</h1>
+    <p class="slogan">렌즈와 AI로 창작의 경계를 함께 넓혀요</p>
+    <p class="desc">사진 촬영부터 영상 편집, 생성형 AI 활용까지<br>함께 성장하는 모임</p>
+    <div class="hero-tags">
+      <span class="hero-tag">📷 사진 촬영</span>
+      <span class="hero-tag">🎬 영상 편집</span>
+      <span class="hero-tag">✨ 생성형 AI</span>
+      <span class="hero-tag">🗺️ 출사·야외활동</span>
+    </div>
+  </div>
+
+  <!-- Step Indicator -->
+  <div class="steps-wrapper">
+    <div class="steps">
+      <div class="step-item active" id="step-ind-1">
+        <div class="step-circle">1</div>
+        <span class="step-label">관심 분야</span>
+      </div>
+      <div class="step-item" id="step-ind-2">
+        <div class="step-circle">2</div>
+        <span class="step-label">기본 정보</span>
+      </div>
+      <div class="step-item" id="step-ind-3">
+        <div class="step-circle">3</div>
+        <span class="step-label">약관 동의</span>
+      </div>
+      <div class="step-item" id="step-ind-4">
+        <div class="step-circle">4</div>
+        <span class="step-label">최종 확인</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ STEP 1: 관심 분야 ════ -->
+  <div id="step-1">
+    <div class="card">
+      <div class="card-title">관심 분야를 선택해주세요</div>
+      <div class="card-subtitle">중복 선택 가능합니다. 최소 1개 이상 선택하세요.</div>
+
+      <div class="interest-grid">
+        <div class="interest-card" data-value="사진 촬영" onclick="toggleInterest(this)">
+          <div class="check-icon">✓</div>
+          <div class="icon">📷</div>
+          <div class="name">사진 촬영</div>
+          <div class="desc-text">풍경·인물·스트릿</div>
+        </div>
+        <div class="interest-card" data-value="영상 제작" onclick="toggleInterest(this)">
+          <div class="check-icon">✓</div>
+          <div class="icon">🎬</div>
+          <div class="name">영상 제작</div>
+          <div class="desc-text">촬영·편집·유튜브</div>
+        </div>
+        <div class="interest-card" data-value="AI 이미지" onclick="toggleInterest(this)">
+          <div class="check-icon">✓</div>
+          <div class="icon">✨</div>
+          <div class="name">AI 이미지</div>
+          <div class="desc-text">Midjourney·FLUX</div>
+        </div>
+        <div class="interest-card" data-value="AI 영상" onclick="toggleInterest(this)">
+          <div class="check-icon">✓</div>
+          <div class="icon">🤖</div>
+          <div class="name">AI 영상</div>
+          <div class="desc-text">Sora·Runway·Veo</div>
+        </div>
+        <div class="interest-card" data-value="드론 촬영" onclick="toggleInterest(this)">
+          <div class="check-icon">✓</div>
+          <div class="icon">🚁</div>
+          <div class="name">드론 촬영</div>
+          <div class="desc-text">항공·공중 영상</div>
+        </div>
+        <div class="interest-card" data-value="출사·여행" onclick="toggleInterest(this)">
+          <div class="check-icon">✓</div>
+          <div class="icon">🗺️</div>
+          <div class="name">출사·여행</div>
+          <div class="desc-text">그룹 출사·기획</div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="skill-section" style="margin-bottom:16px">
+        <label>사진·영상 실력 수준</label>
+        <div class="btn-group" id="skill-photo-group">
+          <button class="skill-btn" onclick="selectSkill('photo', this)">입문</button>
+          <button class="skill-btn" onclick="selectSkill('photo', this)">초급</button>
+          <button class="skill-btn" onclick="selectSkill('photo', this)">중급</button>
+          <button class="skill-btn" onclick="selectSkill('photo', this)">고급</button>
+        </div>
+      </div>
+
+      <div class="skill-section">
+        <label>AI 도구 활용 수준</label>
+        <div class="btn-group" id="skill-ai-group">
+          <button class="skill-btn" onclick="selectSkill('ai', this)">처음 접해봐요</button>
+          <button class="skill-btn" onclick="selectSkill('ai', this)">조금 써봤어요</button>
+          <button class="skill-btn" onclick="selectSkill('ai', this)">자주 활용해요</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-next" id="btn-next-1" onclick="goStep(2)" disabled>다음 단계 →</button>
+    </div>
+  </div>
+
+  <!-- ════ STEP 2: 기본 정보 ════ -->
+  <div id="step-2" style="display:none">
+    <div class="card">
+      <div class="card-title">기본 정보를 입력해주세요</div>
+      <div class="card-subtitle">필수 항목(*)을 모두 입력해야 다음 단계로 이동합니다.</div>
+
+      <div class="form-group">
+        <label>이름 <span class="required">*</span></label>
+        <input type="text" class="form-input" id="f-name" placeholder="홍길동" oninput="validateStep2()" />
+        <div class="field-error" id="err-name">이름을 입력해주세요.</div>
+      </div>
+
+      <div class="form-group">
+        <label>연락처 <span class="required">*</span></label>
+        <input type="tel" class="form-input" id="f-phone" placeholder="010-0000-0000"
+               oninput="formatPhone(this); validateStep2()" maxlength="13" />
+        <div class="field-error" id="err-phone">올바른 연락처를 입력해주세요. (예: 010-1234-5678)</div>
+      </div>
+
+      <div class="form-group">
+        <label>이메일 <span class="required">*</span></label>
+        <input type="email" class="form-input" id="f-email" placeholder="example@email.com"
+               oninput="validateStep2()" />
+        <div class="field-error" id="err-email">올바른 이메일 형식을 입력해주세요.</div>
+      </div>
+
+      <div class="form-group">
+        <label>비밀번호 <span class="required">*</span></label>
+        <input type="password" class="form-input" id="f-pw" placeholder="영문+숫자 8자 이상"
+               oninput="checkPwStrength(this); validateStep2()" />
+        <div class="pw-strength-bar"><div class="pw-strength-fill" id="pw-fill"></div></div>
+        <div class="pw-strength-label" id="pw-label" style="color:#94a3b8"></div>
+        <div class="field-error" id="err-pw">영문과 숫자를 포함해 8자 이상 입력해주세요.</div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="form-group">
+        <label>소속 기관 <span class="optional">(선택)</span></label>
+        <input type="text" class="form-input" id="f-org" placeholder="○○기관 / ○○회사" />
+      </div>
+
+      <div class="form-group">
+        <label>직책·직급 <span class="optional">(선택)</span></label>
+        <select class="form-select" id="f-pos">
+          <option value="">선택 안 함</option>
+          <option>9급</option>
+          <option>8급</option>
+          <option>7급</option>
+          <option>6급</option>
+          <option>5급</option>
+          <option>4급 이상</option>
+          <option>일반직</option>
+          <option>계약직</option>
+          <option>기타</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>가입 동기 <span class="optional">(선택)</span></label>
+        <textarea class="form-textarea" id="f-intro" placeholder="가입 동기나 바라는 점을 자유롭게 적어주세요."></textarea>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-prev" onclick="goStep(1)">← 이전</button>
+      <button class="btn btn-next" id="btn-next-2" onclick="goStep(3)" disabled>다음 단계 →</button>
+    </div>
+  </div>
+
+  <!-- ════ STEP 3: 약관 동의 ════ -->
+  <div id="step-3" style="display:none">
+    <div class="card">
+      <div class="card-title">약관에 동의해주세요</div>
+      <div class="card-subtitle">필수 항목에 동의해야 가입 신청이 가능합니다.</div>
+
+      <!-- 서비스 이용약관 -->
+      <div class="form-group">
+        <label>서비스 이용약관</label>
+        <div class="terms-box">
+          <strong>제1조 (목적)</strong><br>
+          본 약관은 사진·영상·AI 창작 동호회(이하 "동호회")가 제공하는 서비스 이용에 관한 기본적인 사항을 규정합니다.<br><br>
+          <strong>제2조 (서비스 이용)</strong><br>
+          회원은 동호회의 모임·행사·온라인 채널 등 제반 서비스를 이용할 수 있으며, 동호회의 목적 및 규정에 따라 성실히 활동할 의무가 있습니다.<br><br>
+          <strong>제3조 (운영 규칙)</strong><br>
+          회원은 타인의 권리를 침해하거나 건전한 동호회 문화를 해치는 행위를 해서는 안 됩니다. 이를 위반할 경우 운영진의 결정에 따라 제명될 수 있습니다.<br><br>
+          <strong>제4조 (면책)</strong><br>
+          동호회는 회원 간 분쟁, 개인 활동 중 발생한 사고에 대해 법적 책임을 지지 않습니다.
+        </div>
+        <div class="chk-all-row">
+          <input type="checkbox" id="chk-all" onchange="toggleAll(this)" />
+          <label for="chk-all">전체 동의하기</label>
+        </div>
+        <div class="chk-item">
+          <input type="checkbox" id="chk1" onchange="syncAll(); validateStep3()" />
+          <label for="chk1">[서비스 이용약관 동의] <span class="chk-badge req">필수</span></label>
+        </div>
+      </div>
+
+      <!-- 개인정보 수집·이용 -->
+      <div class="form-group">
+        <label>개인정보 수집·이용 동의</label>
+        <div class="terms-box">
+          <strong>수집 항목:</strong> 이름, 연락처, 이메일, 소속기관, 직책·직급, 가입동기<br><br>
+          <strong>수집 목적:</strong> 회원 관리, 모임 안내, 활동 연락<br><br>
+          <strong>보유 기간:</strong> 탈퇴 후 6개월 이내 파기 (단, 법령에 의한 보유 필요 시 해당 기간까지 보관)<br><br>
+          <strong>제3자 제공:</strong> 동호회 활동 운영 목적 외 제3자에게 제공하지 않습니다.<br><br>
+          귀하는 개인정보 수집·이용에 동의를 거부할 권리가 있으나, 거부 시 가입 신청이 불가합니다.
+        </div>
+        <div class="chk-item">
+          <input type="checkbox" id="chk2" onchange="syncAll(); validateStep3()" />
+          <label for="chk2">[개인정보 수집·이용 동의] <span class="chk-badge req">필수</span></label>
+        </div>
+      </div>
+
+      <!-- 선택 동의 -->
+      <div class="form-group">
+        <label>선택 동의 항목</label>
+        <div class="chk-item">
+          <input type="checkbox" id="chk3" onchange="syncAll()" />
+          <label for="chk3">[창작물 모임 내 공유 동의] <span class="chk-badge opt">선택</span><br>
+            <span style="font-size:11px;color:#94a3b8">회원 활동 중 제작한 사진·영상·AI 결과물을 동호회 채널에 공유하는 데 동의합니다.</span>
+          </label>
+        </div>
+        <div class="chk-item">
+          <input type="checkbox" id="chk4" onchange="syncAll()" />
+          <label for="chk4">[활동 소식 알림 수신 동의] <span class="chk-badge opt">선택</span><br>
+            <span style="font-size:11px;color:#94a3b8">모임 일정, 출사 공지, 뉴스레터 등 동호회 소식을 이메일로 받는 데 동의합니다.</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-prev" onclick="goStep(2)">← 이전</button>
+      <button class="btn btn-next" id="btn-next-3" onclick="goStep(4)" disabled>다음 단계 →</button>
+    </div>
+  </div>
+
+  <!-- ════ STEP 4: 최종 확인 ════ -->
+  <div id="step-4" style="display:none">
+    <div class="card">
+      <div class="card-title">입력 내용을 확인해주세요</div>
+      <div class="card-subtitle">아래 정보를 확인 후 신청 버튼을 눌러주세요.</div>
+
+      <div class="summary-section">
+        <h3>관심 분야</h3>
+        <div class="summary-chips" id="summary-interests"></div>
+        <table class="summary-table">
+          <tr>
+            <td>사진·영상 수준</td>
+            <td id="sum-skillPhoto">—</td>
+          </tr>
+          <tr>
+            <td>AI 도구 수준</td>
+            <td id="sum-skillAi">—</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="summary-section">
+        <h3>기본 정보</h3>
+        <table class="summary-table">
+          <tr><td>이름</td><td id="sum-name">—</td></tr>
+          <tr><td>연락처</td><td id="sum-phone">—</td></tr>
+          <tr><td>이메일</td><td id="sum-email">—</td></tr>
+          <tr><td>소속 기관</td><td id="sum-org">—</td></tr>
+          <tr><td>직책·직급</td><td id="sum-pos">—</td></tr>
+          <tr><td>가입 동기</td><td id="sum-intro" style="word-break:break-word">—</td></tr>
+        </table>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="summary-section">
+        <h3>약관 동의</h3>
+        <table class="summary-table">
+          <tr><td>서비스 이용약관</td><td id="sum-t1">—</td></tr>
+          <tr><td>개인정보 동의</td><td id="sum-t2">—</td></tr>
+          <tr><td>창작물 공유</td><td id="sum-t3">—</td></tr>
+          <tr><td>알림 수신</td><td id="sum-t4">—</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-prev" onclick="goStep(3)">← 이전</button>
+      <button class="btn btn-next btn-submit" onclick="submitForm()">🚀 가입 신청하기</button>
+    </div>
+  </div>
+
+  <!-- ════ 완료 화면 ════ -->
+  <div id="complete-screen">
+    <div class="complete-logos">
+      <div class="complete-logo camera">📷</div>
+      <div class="complete-logo video">🎬</div>
+      <div class="complete-logo ai">✨</div>
+    </div>
+    <h2>가입 신청이 완료되었습니다!</h2>
+    <p class="sub">신청해 주셔서 감사합니다.</p>
+
+    <div class="complete-info">
+      <div class="ci-row"><span class="ci-label">이름</span><span class="ci-val" id="done-name">—</span></div>
+      <div class="ci-row"><span class="ci-label">이메일</span><span class="ci-val" id="done-email">—</span></div>
+      <div class="ci-row" style="align-items:flex-start">
+        <span class="ci-label">관심 분야</span>
+        <div class="summary-chips" id="done-interests" style="margin:0"></div>
+      </div>
+    </div>
+
+    <div class="complete-notice">
+      📋 운영진 검토 후 <strong>1~2일 내</strong> 승인 안내 메일을 보내드립니다.<br>
+      문의사항은 동호회 채널을 통해 연락해 주세요.
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+  // ⚠️ Apps Script 웹 앱 배포 후 아래 URL을 교체하세요
+  var SCRIPT_URL = "https://script.google.com/macros/s/[배포ID]/exec";
+
+  // ── State ──────────────────────────────────────────────
+  var state = {
+    step: 1,
+    interests: [],
+    skillPhoto: "",
+    skillAi: "",
+  };
+
+  // ── Step Navigation ─────────────────────────────────────
+  function goStep(n) {
+    document.getElementById("step-" + state.step).style.display = "none";
+    document.getElementById("step-" + n).style.display = "block";
+    state.step = n;
+    updateStepIndicator(n);
+    if (n === 4) fillSummary();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function updateStepIndicator(current) {
+    for (var i = 1; i <= 4; i++) {
+      var el = document.getElementById("step-ind-" + i);
+      el.classList.remove("active", "done");
+      if (i < current) {
+        el.classList.add("done");
+        el.querySelector(".step-circle").textContent = "";
+      } else if (i === current) {
+        el.classList.add("active");
+        el.querySelector(".step-circle").textContent = i;
+      } else {
+        el.querySelector(".step-circle").textContent = i;
+      }
+    }
+  }
+
+  // ── Step 1: Interests ───────────────────────────────────
+  function toggleInterest(card) {
+    var val = card.dataset.value;
+    card.classList.toggle("selected");
+    if (card.classList.contains("selected")) {
+      if (!state.interests.includes(val)) state.interests.push(val);
+    } else {
+      state.interests = state.interests.filter(function(v) { return v !== val; });
+    }
+    validateStep1();
+  }
+
+  function selectSkill(type, btn) {
+    var groupId = type === "photo" ? "skill-photo-group" : "skill-ai-group";
+    var group = document.getElementById(groupId);
+    group.querySelectorAll(".skill-btn").forEach(function(b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    if (type === "photo") state.skillPhoto = btn.textContent;
+    else state.skillAi = btn.textContent;
+  }
+
+  function validateStep1() {
+    var ok = state.interests.length > 0;
+    document.getElementById("btn-next-1").disabled = !ok;
+  }
+
+  // ── Step 2: Form Validation ─────────────────────────────
+  function formatPhone(input) {
+    var v = input.value.replace(/\D/g, "");
+    if (v.length <= 3) input.value = v;
+    else if (v.length <= 7) input.value = v.slice(0, 3) + "-" + v.slice(3);
+    else input.value = v.slice(0, 3) + "-" + v.slice(3, 7) + "-" + v.slice(7, 11);
+  }
+
+  function checkPwStrength(input) {
+    var v = input.value;
+    var score = 0;
+    if (v.length >= 8) score++;
+    if (/[a-zA-Z]/.test(v)) score++;
+    if (/[0-9]/.test(v)) score++;
+    if (/[^a-zA-Z0-9]/.test(v)) score++;
+
+    var fill = document.getElementById("pw-fill");
+    var label = document.getElementById("pw-label");
+    var configs = [
+      { pct: "25%", color: "#ef4444", text: "매우 약함" },
+      { pct: "50%", color: "#f97316", text: "약함" },
+      { pct: "75%", color: "#eab308", text: "보통" },
+      { pct: "100%", color: "#22c55e", text: "강함" },
+    ];
+    if (v.length === 0) {
+      fill.style.width = "0"; label.textContent = ""; return;
+    }
+    var cfg = configs[score - 1] || configs[0];
+    fill.style.width = cfg.pct;
+    fill.style.background = cfg.color;
+    label.textContent = cfg.text;
+    label.style.color = cfg.color;
+  }
+
+  function validateStep2() {
+    var name  = document.getElementById("f-name").value.trim();
+    var phone = document.getElementById("f-phone").value.trim();
+    var email = document.getElementById("f-email").value.trim();
+    var pw    = document.getElementById("f-pw").value;
+
+    var phoneOk = /^010-\d{4}-\d{4}$/.test(phone);
+    var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    var pwOk    = pw.length >= 8 && /[a-zA-Z]/.test(pw) && /[0-9]/.test(pw);
+
+    setFieldState("f-phone", phoneOk || phone === "", "err-phone", !phoneOk && phone !== "");
+    setFieldState("f-email", emailOk || email === "", "err-email", !emailOk && email !== "");
+    setFieldState("f-pw", pwOk || pw === "", "err-pw", !pwOk && pw !== "");
+
+    var ok = name && phoneOk && emailOk && pwOk;
+    document.getElementById("btn-next-2").disabled = !ok;
+  }
+
+  function setFieldState(inputId, valid, errId, showErr) {
+    var el = document.getElementById(inputId);
+    el.classList.toggle("error",   !valid && showErr);
+    el.classList.toggle("success",  valid && document.getElementById(inputId).value !== "");
+    var errEl = document.getElementById(errId);
+    if (errEl) errEl.classList.toggle("show", showErr);
+  }
+
+  // ── Step 3: Terms ───────────────────────────────────────
+  function toggleAll(cb) {
+    ["chk1","chk2","chk3","chk4"].forEach(function(id) {
+      document.getElementById(id).checked = cb.checked;
+    });
+    validateStep3();
+  }
+
+  function syncAll() {
+    var all = ["chk1","chk2","chk3","chk4"].every(function(id) {
+      return document.getElementById(id).checked;
+    });
+    document.getElementById("chk-all").checked = all;
+    validateStep3();
+  }
+
+  function validateStep3() {
+    var ok = document.getElementById("chk1").checked && document.getElementById("chk2").checked;
+    document.getElementById("btn-next-3").disabled = !ok;
+  }
+
+  // ── Step 4: Summary ─────────────────────────────────────
+  function fillSummary() {
+    // Interests chips
+    var chipsEl = document.getElementById("summary-interests");
+    chipsEl.innerHTML = state.interests.map(function(i) {
+      return '<span class="chip">' + i + '</span>';
+    }).join("");
+
+    document.getElementById("sum-skillPhoto").textContent = state.skillPhoto || "—";
+    document.getElementById("sum-skillAi").textContent    = state.skillAi    || "—";
+
+    document.getElementById("sum-name").textContent  = document.getElementById("f-name").value  || "—";
+    document.getElementById("sum-phone").textContent = document.getElementById("f-phone").value || "—";
+    document.getElementById("sum-email").textContent = document.getElementById("f-email").value || "—";
+    document.getElementById("sum-org").textContent   = document.getElementById("f-org").value   || "—";
+    document.getElementById("sum-pos").textContent   = document.getElementById("f-pos").value   || "—";
+    document.getElementById("sum-intro").textContent = document.getElementById("f-intro").value || "—";
+
+    var yn = function(id) { return document.getElementById(id).checked ? "✅ 동의" : "—"; };
+    document.getElementById("sum-t1").textContent = yn("chk1");
+    document.getElementById("sum-t2").textContent = yn("chk2");
+    document.getElementById("sum-t3").textContent = yn("chk3");
+    document.getElementById("sum-t4").textContent = yn("chk4");
+  }
+
+  // ── Submit ───────────────────────────────────────────────
+  function submitForm() {
+    var payload = {
+      name:       document.getElementById("f-name").value.trim(),
+      phone:      document.getElementById("f-phone").value.trim(),
+      email:      document.getElementById("f-email").value.trim(),
+      org:        document.getElementById("f-org").value.trim(),
+      pos:        document.getElementById("f-pos").value,
+      intro:      document.getElementById("f-intro").value.trim(),
+      interests:  state.interests,
+      skillPhoto: state.skillPhoto,
+      skillAi:    state.skillAi,
+      terms1:     document.getElementById("chk1").checked,
+      terms2:     document.getElementById("chk2").checked,
+      terms3:     document.getElementById("chk3").checked,
+      terms4:     document.getElementById("chk4").checked,
+    };
+
+    // Show loading
+    document.getElementById("loading-overlay").classList.add("active");
+
+    fetch(SCRIPT_URL, {
+      method:  "POST",
+      mode:    "no-cors",   // CORS 우회 (Apps Script 필수)
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(payload),
+    })
+    .then(function() {
+      // no-cors 특성상 응답 확인 불가 → 바로 완료 화면 전환
+      showComplete(payload);
+    })
+    .catch(function() {
+      // 네트워크 오류 시에도 완료 화면 (서버는 수신했을 가능성)
+      showComplete(payload);
+    })
+    .finally(function() {
+      document.getElementById("loading-overlay").classList.remove("active");
+    });
+  }
+
+  function showComplete(payload) {
+    // Hide all steps
+    for (var i = 1; i <= 4; i++) {
+      var el = document.getElementById("step-" + i);
+      if (el) el.style.display = "none";
+    }
+    document.querySelector(".steps-wrapper").style.display = "none";
+
+    document.getElementById("done-name").textContent  = payload.name;
+    document.getElementById("done-email").textContent = payload.email;
+
+    var doneChips = document.getElementById("done-interests");
+    doneChips.innerHTML = payload.interests.map(function(i) {
+      return '<span class="chip">' + i + '</span>';
+    }).join("");
+
+    document.getElementById("complete-screen").classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+</script>
+</body>
+</html>
