@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>실습 예시 - 단양역</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: white;
+            position: relative;
+        }
+        .text-brand-blue { color: #2980b9; }
+        .bg-brand-blue { background-color: #2980b9; }
+        .text-brand-yellow { color: #f1c40f; }
+        .bg-brand-yellow { background-color: #f1c40f; }
+        .text-brand-green { color: #27ae60; }
+        .bg-brand-green { background-color: #27ae60; }
+        .text-brand-red { color: #e74c3c; }
+        .bg-brand-red { background-color: #e74c3c; }
+
+        /* Map Visualization Styles */
+        .mock-map-container {
+            background-color: #e6e9f0;
+            position: relative;
+            overflow: hidden;
+            /* Replaced gradient with solid color due to restriction, simulating grid with simple borders if needed, but here just solid background is safer */
+            background-color: #e6e9f0;
+        }
+        /* Simulating grid with repeated background images is tricky without gradients, so we keep it simple or use a pattern image if available.
+           For this task, we'll just use a solid background to comply with "no css gradients" rule strictly,
+           or use a very subtle SVG pattern if we could, but solid is fine. */
+
+        .river-shape {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 40%;
+            background-color: #a5d8ff;
+            opacity: 0.6;
+            clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%, 30% 60%);
+        }
+        .railroad-track {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 30%;
+            width: 12px;
+            background-color: #57606f;
+            z-index: 1;
+        }
+        /* Removing linear-gradient for railroad ties to comply with rules. Using solid line instead. */
+        .railroad-track::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 20px;
+            height: 100%;
+            transform: translateX(-50%);
+            /* background: repeating-linear-gradient(...) removed. */
+            border-left: 2px dashed #333;
+            border-right: 2px dashed #333;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .location-pin {
+            animation: bounce-pin 2s infinite;
+        }
+        @keyframes bounce-pin {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #27ae60;
+            animation: pulse-ring-anim 2s infinite;
+            opacity: 0;
+        }
+        @keyframes pulse-ring-anim {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .checklist-item {
+            transition: transform 0.2s ease;
+        }
+        .checklist-item:hover {
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<header class="h-24 bg-white border-b border-gray-200 px-12 flex items-center justify-between z-10">
+<div class="flex items-center space-x-5">
+<div class="w-12 h-12 bg-brand-blue rounded-lg flex items-center justify-center text-white">
+<i class="fa-solid fa-location-dot text-2xl"></i>
+</div>
+<h1 class="text-3xl font-bold text-gray-800">실습 예시 - 충북 단양군 '단양역'</h1>
+</div>
+<div class="flex items-center space-x-3 text-gray-500">
+<span class="text-base font-medium">PART 2. 비행금지구역</span>
+<span class="text-gray-300 text-lg">|</span>
+<span class="text-brand-blue font-bold text-xl">07</span>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex p-10 bg-gray-50 gap-10">
+<!-- Left Column: Map & Status -->
+<div class="w-1/2 flex flex-col space-y-5">
+<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+<div class="flex items-center justify-between mb-5">
+<div>
+<p class="text-sm text-gray-500 font-bold mb-1">LOCATION</p>
+<h2 class="text-2xl font-bold text-gray-800">충청북도 단양군 단양읍 별곡리</h2>
+</div>
+<div class="bg-gray-100 px-4 py-1.5 rounded text-base text-gray-600 font-mono">
+<i class="fa-solid fa-magnifying-glass mr-1"></i> 단양역
+                        </div>
+</div>
+<!-- Mock Map Visualization -->
+<div class="mock-map-container h-64 rounded-lg relative mb-5 border border-gray-300">
+<div class="river-shape"></div>
+<div class="railroad-track"></div>
+<!-- Station Marker -->
+<div class="absolute top-1/2 left-[30%] transform -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+<div class="relative">
+<div class="w-5 h-5 bg-brand-green rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pulse-ring"></div>
+<i class="fa-solid fa-location-dot text-5xl text-brand-blue location-pin drop-shadow-md"></i>
+</div>
+<span class="bg-white px-3 py-1 rounded shadow text-sm font-bold mt-2 text-gray-800 border border-gray-200">단양역</span>
+</div>
+<!-- UI Overlay -->
+<div class="absolute top-4 left-4 bg-white bg-opacity-90 px-4 py-2 rounded shadow-sm backdrop-filter backdrop-blur-sm z-20">
+<div class="flex items-center space-x-2">
+<div class="w-3 h-3 rounded-full bg-gray-300"></div>
+<p class="text-sm font-bold text-gray-600">지도 데이터 로딩 완료</p>
+</div>
+</div>
+</div>
+<!-- Status Banner -->
+<div class="bg-green-50 border-2 border-brand-green rounded-lg p-5 flex items-center justify-between">
+<div class="flex items-center">
+<div class="w-12 h-12 bg-brand-green rounded-full flex items-center justify-center text-white mr-5 shadow-sm">
+<i class="fa-solid fa-check text-2xl"></i>
+</div>
+<div>
+<p class="text-base text-green-800 font-bold opacity-80">드론 원스톱 확인 결과</p>
+<p class="text-2xl font-black text-brand-green">비행 가능 구역 (색깔 없음)</p>
+</div>
+</div>
+<div class="text-right">
+<span class="bg-white text-brand-green text-sm font-bold px-3 py-1.5 rounded border border-green-200">승인 불필요</span>
+</div>
+</div>
+</div>
+<!-- Tip Box -->
+<div class="bg-blue-600 text-white p-6 rounded-xl shadow-lg flex items-center justify-between relative overflow-hidden">
+<div class="absolute right-0 top-0 bottom-0 w-32 bg-white opacity-10 transform skew-x-12 translate-x-10"></div>
+<div class="z-10">
+<div class="flex items-center mb-2">
+<i class="fa-solid fa-mobile-screen-button text-2xl mr-3"></i>
+<h3 class="font-bold text-xl">여행 전 1분 체크!</h3>
+</div>
+<p class="text-base opacity-90 leading-relaxed">여행지 도착 전, 반드시 '드론 원스톱' 앱으로<br/>실시간 비행 가능 여부를 확인하세요.</p>
+</div>
+<div class="z-10 bg-white text-blue-600 w-14 h-14 rounded-full flex items-center justify-center font-bold text-2xl shadow-md">
+<i class="fa-solid fa-arrow-right"></i>
+</div>
+</div>
+</div>
+<!-- Right Column: Checklist & Warnings -->
+<div class="w-1/2 flex flex-col h-full">
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-7 flex-1 flex flex-col">
+<h3 class="text-2xl font-bold text-gray-800 mb-7 flex items-center border-b pb-5 border-gray-100">
+<i class="fa-solid fa-clipboard-check text-brand-blue mr-4"></i>
+                        비행 전 필수 체크리스트
+                    </h3>
+<div class="space-y-5 flex-1">
+<!-- Check Item 1 -->
+<div class="checklist-item flex items-start p-4 hover:bg-gray-50 rounded-lg">
+<div class="mt-1 mr-5 flex-shrink-0">
+<i class="fa-regular fa-square-check text-3xl text-gray-400"></i>
+</div>
+<div>
+<p class="font-bold text-gray-800 text-xl">사유지 및 시설 관리자 동의</p>
+<p class="text-base text-gray-600 mt-1.5 leading-relaxed">단양역 역사 내부나 주차장 등 사유지 상공은 관리자의 허락이 필요할 수 있습니다.</p>
+</div>
+</div>
+<!-- Check Item 2 -->
+<div class="checklist-item flex items-start p-4 hover:bg-gray-50 rounded-lg">
+<div class="mt-1 mr-5 flex-shrink-0">
+<i class="fa-solid fa-train text-3xl text-gray-600"></i>
+</div>
+<div>
+<p class="font-bold text-gray-800 text-xl">철도 시설물 안전거리 유지</p>
+<p class="text-base text-gray-600 mt-1.5 leading-relaxed">고압 전선이 있는 철로는 전파 간섭 위험이 큽니다. <span class="text-brand-red font-bold">최소 30m 이상 이격</span>하세요.</p>
+</div>
+</div>
+<!-- Check Item 3 -->
+<div class="checklist-item flex items-start p-4 hover:bg-gray-50 rounded-lg">
+<div class="mt-1 mr-5 flex-shrink-0">
+<i class="fa-solid fa-cloud-arrow-up text-3xl text-brand-blue"></i>
+</div>
+<div>
+<p class="font-bold text-gray-800 text-xl">고도 150m 이하 준수</p>
+<p class="text-base text-gray-600 mt-1.5 leading-relaxed">비행 가능 구역이라도 고도는 항상 150m(지면 기준)로 제한됩니다.</p>
+</div>
+</div>
+<!-- Check Item 4 -->
+<div class="checklist-item flex items-start p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+<div class="mt-1 mr-5 flex-shrink-0">
+<i class="fa-solid fa-moon text-3xl text-yellow-600"></i>
+</div>
+<div>
+<div class="flex items-center mb-1">
+<p class="font-bold text-gray-800 text-xl mr-3">야간 비행 절대 주의</p>
+<span class="bg-brand-red text-white text-sm px-2.5 py-0.5 rounded font-bold">특별 승인 필수</span>
+</div>
+<p class="text-base text-gray-700 leading-relaxed">일몰 후 비행은 <strong>전국 어디서나 금지</strong>입니다. 야경 촬영 시 별도 승인을 받아야 합니다.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body>
+</html>
