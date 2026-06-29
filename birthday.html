@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>생년월일 요일 계산기</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #14532d 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 40px 36px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 24px 64px rgba(0,0,0,.35);
+    }
+
+    /* ── Header ── */
+    .header { text-align: center; margin-bottom: 36px; }
+    .header-icon { font-size: 52px; margin-bottom: 12px; }
+    .header h1 {
+      font-size: 24px; font-weight: 900; color: #1e293b;
+      margin-bottom: 6px;
+    }
+    .header p { font-size: 14px; color: #64748b; }
+
+    /* ── Input ── */
+    .input-group { margin-bottom: 24px; }
+    .input-group label {
+      display: block; font-size: 14px; font-weight: 600;
+      color: #374151; margin-bottom: 8px;
+    }
+    .date-input {
+      width: 100%;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 18px; font-family: inherit;
+      color: #1e293b;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      cursor: pointer;
+    }
+    .date-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    /* ── Result ── */
+    .result {
+      display: none;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      animation: fadeIn .4s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: none; } }
+
+    .result-top {
+      padding: 28px 24px;
+      text-align: center;
+      color: #fff;
+    }
+    .result-emoji { font-size: 56px; margin-bottom: 10px; }
+    .result-day {
+      font-size: 36px; font-weight: 900;
+      letter-spacing: -1px; margin-bottom: 4px;
+    }
+    .result-meaning { font-size: 14px; opacity: .85; }
+
+    .result-bottom {
+      background: #f8fafc;
+      padding: 20px 24px;
+      border-top: 1px solid rgba(255,255,255,.2);
+    }
+    .info-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 14px;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #94a3b8; font-weight: 500; }
+    .info-value { color: #1e293b; font-weight: 700; }
+
+    /* ── Fun fact ── */
+    .fun-fact {
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #1d4ed8;
+      line-height: 1.7;
+      margin-bottom: 24px;
+      display: none;
+    }
+
+    /* ── Reset button ── */
+    .btn-reset {
+      width: 100%;
+      background: #1e293b;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px; font-weight: 700; font-family: inherit;
+      cursor: pointer;
+      display: none;
+      transition: background .2s;
+    }
+    .btn-reset:hover { background: #334155; }
+
+    /* ── Placeholder hint ── */
+    .hint {
+      text-align: center;
+      padding: 32px 0;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+    .hint-icon { font-size: 36px; margin-bottom: 8px; }
+
+    @media (max-width: 480px) {
+      .card { padding: 28px 20px; }
+      .result-day { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-icon">🗓️</div>
+    <h1>생년월일 요일 계산기</h1>
+    <p>태어난 날의 요일을 바로 알아보세요</p>
+  </div>
+
+  <!-- Date Input -->
+  <div class="input-group">
+    <label for="birth-input">생년월일 선택</label>
+    <input type="date" class="date-input" id="birth-input"
+           oninput="calculate()" />
+  </div>
+
+  <!-- Placeholder -->
+  <div class="hint" id="hint">
+    <div class="hint-icon">👆</div>
+    날짜를 선택하면 요일이 나타납니다
+  </div>
+
+  <!-- Result -->
+  <div class="result" id="result">
+    <div class="result-top" id="result-top">
+      <div class="result-emoji" id="result-emoji"></div>
+      <div class="result-day"  id="result-day"></div>
+      <div class="result-meaning" id="result-meaning"></div>
+    </div>
+    <div class="result-bottom">
+      <div class="info-row">
+        <span class="info-label">생년월일</span>
+        <span class="info-value" id="info-date"></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">태어난 요일</span>
+        <span class="info-value" id="info-day"></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">오늘까지</span>
+        <span class="info-value" id="info-age"></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">살아온 날</span>
+        <span class="info-value" id="info-days"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fun Fact -->
+  <div class="fun-fact" id="fun-fact"></div>
+
+  <!-- Reset -->
+  <button class="btn-reset" id="btn-reset" onclick="reset()">다시 계산하기</button>
+</div>
+
+<script>
+  var DAY_DATA = [
+    {
+      name: "일요일",
+      emoji: "☀️",
+      meaning: "태양의 날 (日曜日)",
+      gradient: "linear-gradient(135deg, #f97316, #ef4444)",
+      fact: "일요일은 태양(Sun)을 상징합니다. 서양에서도 Sunday — 밝고 에너지 넘치는 날에 태어나셨네요!"
+    },
+    {
+      name: "월요일",
+      emoji: "🌙",
+      meaning: "달의 날 (月曜日)",
+      gradient: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+      fact: "월요일은 달(Moon)을 상징합니다. 영어로 Monday — 감수성이 풍부하고 직관력이 뛰어난 날입니다."
+    },
+    {
+      name: "화요일",
+      emoji: "🔥",
+      meaning: "화성의 날 (火曜日)",
+      gradient: "linear-gradient(135deg, #ef4444, #dc2626)",
+      fact: "화요일은 화성(Mars)을 상징합니다. 영어로 Tuesday — 열정적이고 행동력 있는 날에 태어나셨네요!"
+    },
+    {
+      name: "수요일",
+      emoji: "💧",
+      meaning: "수성의 날 (水曜日)",
+      gradient: "linear-gradient(135deg, #0ea5e9, #2563eb)",
+      fact: "수요일은 수성(Mercury)을 상징합니다. 영어로 Wednesday — 소통과 지혜를 상징하는 날입니다."
+    },
+    {
+      name: "목요일",
+      emoji: "🌳",
+      meaning: "목성의 날 (木曜日)",
+      gradient: "linear-gradient(135deg, #22c55e, #16a34a)",
+      fact: "목요일은 목성(Jupiter)을 상징합니다. 영어로 Thursday — 성장과 행운을 상징하는 날에 태어나셨네요!"
+    },
+    {
+      name: "금요일",
+      emoji: "✨",
+      meaning: "금성의 날 (金曜日)",
+      gradient: "linear-gradient(135deg, #eab308, #f59e0b)",
+      fact: "금요일은 금성(Venus)을 상징합니다. 영어로 Friday — 아름다움과 사랑을 상징하는 날입니다."
+    },
+    {
+      name: "토요일",
+      emoji: "🌍",
+      meaning: "토성의 날 (土曜日)",
+      gradient: "linear-gradient(135deg, #64748b, #475569)",
+      fact: "토요일은 토성(Saturn)을 상징합니다. 영어로 Saturday — 안정과 근면을 상징하는 날에 태어나셨네요!"
+    },
+  ];
+
+  // Set max date to today
+  (function() {
+    var t  = new Date();
+    var mm = String(t.getMonth() + 1).padStart(2, "0");
+    var dd = String(t.getDate()).padStart(2, "0");
+    document.getElementById("birth-input").max = t.getFullYear() + "-" + mm + "-" + dd;
+    document.getElementById("birth-input").min = "1900-01-01";
+  })();
+
+  function calculate() {
+    var val = document.getElementById("birth-input").value;
+    if (!val) { reset(); return; }
+
+    var parts = val.split("-");
+    var y = parseInt(parts[0], 10);
+    var m = parseInt(parts[1], 10);
+    var d = parseInt(parts[2], 10);
+    var birth = new Date(y, m - 1, d);
+    var today = new Date();
+
+    if (birth > today) { reset(); return; }
+
+    var info = DAY_DATA[birth.getDay()];
+
+    // 나이 계산
+    var age = today.getFullYear() - y;
+    if (today.getMonth() + 1 < m || (today.getMonth() + 1 === m && today.getDate() < d)) age--;
+
+    // 살아온 날 수
+    var livedDays = Math.floor((today - birth) / (1000 * 60 * 60 * 24));
+
+    // Display
+    document.getElementById("hint").style.display = "none";
+
+    var resultEl = document.getElementById("result");
+    resultEl.style.display = "block";
+
+    document.getElementById("result-top").style.background = info.gradient;
+    document.getElementById("result-emoji").textContent   = info.emoji;
+    document.getElementById("result-day").textContent     = info.name;
+    document.getElementById("result-meaning").textContent = info.meaning;
+
+    document.getElementById("info-date").textContent =
+      y + "년 " + m + "월 " + d + "일";
+    document.getElementById("info-day").textContent  = info.name;
+    document.getElementById("info-age").textContent  = age + "세";
+    document.getElementById("info-days").textContent =
+      livedDays.toLocaleString() + "일째";
+
+    var factEl = document.getElementById("fun-fact");
+    factEl.textContent = "💡 " + info.fact;
+    factEl.style.display = "block";
+
+    document.getElementById("btn-reset").style.display = "block";
+  }
+
+  function reset() {
+    document.getElementById("birth-input").value = "";
+    document.getElementById("hint").style.display   = "block";
+    document.getElementById("result").style.display = "none";
+    document.getElementById("fun-fact").style.display  = "none";
+    document.getElementById("btn-reset").style.display = "none";
+  }
+</script>
+</body>
+</html>
