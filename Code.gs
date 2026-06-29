@@ -13,7 +13,7 @@ var CONFIG = {
 
 // ── HEADERS ───────────────────────────────────────────────────────────────────
 var HEADERS = [
-  "번호", "신청일시", "이름", "연락처", "이메일",
+  "번호", "신청일시", "이름", "연락처", "이메일", "생년월일", "태어난 요일",
   "소속기관", "직책·직급", "관심분야", "사진·영상 수준", "AI 도구 수준",
   "가입동기", "이용약관", "개인정보동의", "창작물공유", "알림수신", "처리상태"
 ];
@@ -64,17 +64,19 @@ function getOrCreateSheet() {
     sheet.setColumnWidth(3,  80);   // 이름
     sheet.setColumnWidth(4,  120);  // 연락처
     sheet.setColumnWidth(5,  180);  // 이메일
-    sheet.setColumnWidth(6,  120);  // 소속기관
-    sheet.setColumnWidth(7,  90);   // 직책·직급
-    sheet.setColumnWidth(8,  200);  // 관심분야
-    sheet.setColumnWidth(9,  110);  // 사진·영상수준
-    sheet.setColumnWidth(10, 110);  // AI수준
-    sheet.setColumnWidth(11, 200);  // 가입동기
-    sheet.setColumnWidth(12, 80);   // 이용약관
-    sheet.setColumnWidth(13, 90);   // 개인정보
-    sheet.setColumnWidth(14, 90);   // 창작물공유
-    sheet.setColumnWidth(15, 90);   // 알림수신
-    sheet.setColumnWidth(16, 100);  // 처리상태
+    sheet.setColumnWidth(6,  110);  // 생년월일
+    sheet.setColumnWidth(7,  90);   // 태어난 요일
+    sheet.setColumnWidth(8,  120);  // 소속기관
+    sheet.setColumnWidth(9,  90);   // 직책·직급
+    sheet.setColumnWidth(10, 200);  // 관심분야
+    sheet.setColumnWidth(11, 110);  // 사진·영상수준
+    sheet.setColumnWidth(12, 110);  // AI수준
+    sheet.setColumnWidth(13, 200);  // 가입동기
+    sheet.setColumnWidth(14, 80);   // 이용약관
+    sheet.setColumnWidth(15, 90);   // 개인정보
+    sheet.setColumnWidth(16, 90);   // 창작물공유
+    sheet.setColumnWidth(17, 90);   // 알림수신
+    sheet.setColumnWidth(18, 100);  // 처리상태
   }
 
   return sheet;
@@ -94,10 +96,12 @@ function appendRow(sheet, data) {
   var rowData = [
     seq,
     now,
-    data.name   || "",
-    data.phone  || "",
-    data.email  || "",
-    data.org    || "",
+    data.name      || "",
+    data.phone     || "",
+    data.email     || "",
+    data.birthDate || "",
+    data.birthDay  || "",
+    data.org       || "",
     data.pos    || "",
     interests,
     data.skillPhoto || "",

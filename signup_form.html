@@ -212,6 +212,24 @@
     .field-error.show { display: block; }
     .form-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
 
+    /* ── Birth Day Result ── */
+    .birth-day-result {
+      margin-top: 10px;
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #1d4ed8;
+      line-height: 1.6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .birth-day-emoji { font-size: 24px; flex-shrink: 0; }
+    .birth-day-text strong { font-size: 15px; font-weight: 700; color: #1e40af; }
+    .birth-day-sub { font-size: 11px; color: #3b82f6; margin-top: 2px; }
+
     /* ── Password Strength ── */
     .pw-strength-bar {
       height: 4px; border-radius: 2px;
@@ -521,6 +539,19 @@
       <div class="section-divider"></div>
 
       <div class="form-group">
+        <label>생년월일 <span class="optional">(선택)</span></label>
+        <input type="date" class="form-input" id="f-birth"
+               oninput="getBirthDay()" />
+        <div id="birth-day-result" class="birth-day-result" style="display:none">
+          <div class="birth-day-emoji" id="birth-day-emoji"></div>
+          <div class="birth-day-text">
+            <div id="birth-day-main"></div>
+            <div class="birth-day-sub" id="birth-day-sub"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label>소속 기관 <span class="optional">(선택)</span></label>
         <input type="text" class="form-input" id="f-org" placeholder="○○기관 / ○○회사" />
       </div>
@@ -651,6 +682,7 @@
           <tr><td>이름</td><td id="sum-name">—</td></tr>
           <tr><td>연락처</td><td id="sum-phone">—</td></tr>
           <tr><td>이메일</td><td id="sum-email">—</td></tr>
+          <tr><td>생년월일</td><td id="sum-birth">—</td></tr>
           <tr><td>소속 기관</td><td id="sum-org">—</td></tr>
           <tr><td>직책·직급</td><td id="sum-pos">—</td></tr>
           <tr><td>가입 동기</td><td id="sum-intro" style="word-break:break-word">—</td></tr>
@@ -713,7 +745,57 @@
     interests: [],
     skillPhoto: "",
     skillAi: "",
+    birthDate: "",
+    birthDay: "",
   };
+
+  // ── Birth Date Day Calculator ───────────────────────────
+  var DAY_INFO = [
+    { name: "일요일", emoji: "☀️", meaning: "태양의 날 (日)" },
+    { name: "월요일", emoji: "🌙", meaning: "달의 날 (月)" },
+    { name: "화요일", emoji: "🔥", meaning: "화성의 날 (火)" },
+    { name: "수요일", emoji: "💧", meaning: "수성의 날 (水)" },
+    { name: "목요일", emoji: "🌳", meaning: "목성의 날 (木)" },
+    { name: "금요일", emoji: "✨", meaning: "금성의 날 (金)" },
+    { name: "토요일", emoji: "🌍", meaning: "토성의 날 (土)" },
+  ];
+
+  function getBirthDay() {
+    var dateVal = document.getElementById("f-birth").value;
+    var resultEl = document.getElementById("birth-day-result");
+
+    if (!dateVal) {
+      resultEl.style.display = "none";
+      state.birthDate = "";
+      state.birthDay = "";
+      return;
+    }
+
+    var parts = dateVal.split("-");
+    var y = parseInt(parts[0], 10);
+    var m = parseInt(parts[1], 10) - 1;
+    var d = parseInt(parts[2], 10);
+    var date = new Date(y, m, d);
+    var info = DAY_INFO[date.getDay()];
+
+    state.birthDate = dateVal;
+    state.birthDay = info.name;
+
+    document.getElementById("birth-day-emoji").textContent = info.emoji;
+    document.getElementById("birth-day-main").innerHTML =
+      y + "년 " + (m + 1) + "월 " + d + "일은 <strong>" + info.name + "</strong>에 태어나셨네요!";
+    document.getElementById("birth-day-sub").textContent = info.meaning;
+    resultEl.style.display = "flex";
+  }
+
+  // ── Set date input max to today ─────────────────────────
+  (function() {
+    var today = new Date();
+    var yyyy  = today.getFullYear();
+    var mm    = String(today.getMonth() + 1).padStart(2, "0");
+    var dd    = String(today.getDate()).padStart(2, "0");
+    document.getElementById("f-birth").setAttribute("max", yyyy + "-" + mm + "-" + dd);
+  })();
 
   // ── Step Navigation ─────────────────────────────────────
   function goStep(n) {
@@ -862,6 +944,8 @@
     document.getElementById("sum-name").textContent  = document.getElementById("f-name").value  || "—";
     document.getElementById("sum-phone").textContent = document.getElementById("f-phone").value || "—";
     document.getElementById("sum-email").textContent = document.getElementById("f-email").value || "—";
+    document.getElementById("sum-birth").textContent =
+      state.birthDate ? state.birthDate + " (" + state.birthDay + ")" : "—";
     document.getElementById("sum-org").textContent   = document.getElementById("f-org").value   || "—";
     document.getElementById("sum-pos").textContent   = document.getElementById("f-pos").value   || "—";
     document.getElementById("sum-intro").textContent = document.getElementById("f-intro").value || "—";
@@ -879,6 +963,8 @@
       name:       document.getElementById("f-name").value.trim(),
       phone:      document.getElementById("f-phone").value.trim(),
       email:      document.getElementById("f-email").value.trim(),
+      birthDate:  state.birthDate,
+      birthDay:   state.birthDay,
       org:        document.getElementById("f-org").value.trim(),
       pos:        document.getElementById("f-pos").value,
       intro:      document.getElementById("f-intro").value.trim(),
