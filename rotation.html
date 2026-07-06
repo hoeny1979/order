@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>타 부서 지원 근무 순번표</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans KR', sans-serif; color: #1e293b; background: #f8fafc; padding: 32px 16px 80px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  header.hd {
+    background: linear-gradient(150deg, #0f172a 0%, #1e3a5f 45%, #14532d 100%);
+    border-radius: 16px; padding: 32px 28px; color: #fff; margin-bottom: 24px;
+  }
+  header.hd h1 { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+  header.hd p { font-size: 13px; color: #cbd5e1; }
+
+  .card {
+    background: #fff; border-radius: 14px; padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    margin-bottom: 20px;
+  }
+  .card h2 { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: #1e293b; }
+  .card h2 .sub { font-weight: 400; font-size: 12px; color: #94a3b8; margin-left: 6px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 10px 8px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+  th { color: #94a3b8; font-weight: 600; font-size: 12px; }
+  tr.next-row td { background: #eff6ff; font-weight: 700; }
+
+  .rank-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #e2e8f0; color: #475569; font-weight: 700; font-size: 12px;
+  }
+  tr.next-row .rank-badge { background: #2563eb; color: #fff; }
+
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .pill.next { background: #dbeafe; color: #1d4ed8; }
+
+  button {
+    font-family: inherit; cursor: pointer; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; padding: 8px 14px; transition: background .15s;
+  }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-ghost { background: #f1f5f9; color: #475569; }
+  .btn-ghost:hover { background: #e2e8f0; }
+  .btn-danger { background: #fee2e2; color: #991b1b; }
+  .btn-danger:hover { background: #fecaca; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  .confirm-bar { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; gap: 12px; flex-wrap: wrap; }
+  .confirm-bar .who { font-size: 13px; color: #475569; }
+  .confirm-bar .who b { color: #1e293b; }
+
+  .hist-empty { color: #94a3b8; font-size: 13px; padding: 12px 0; }
+  .row-actions { display: flex; gap: 6px; }
+
+  .foot-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+
+  .note {
+    background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;
+    padding: 10px 12px; font-size: 12px; color: #92400e; line-height: 1.6; margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hd">
+    <h1>🔁 타 부서 지원 근무 순번표</h1>
+    <p>최근 참여 이력(LRU) 기준 — 가장 오래전에(또는 아직) 지원 근무를 가지 않은 사람이 다음 순번입니다.</p>
+  </header>
+
+  <div class="note">
+    ⚠️ 이 데이터는 이 브라우저의 localStorage에 저장됩니다. 다른 기기·브라우저와 자동으로 동기화되지 않으니,
+    공용 PC에서 관리하거나 하단의 "내보내기/가져오기"로 백업해 두세요.
+  </div>
+
+  <div class="card">
+    <h2>현재 순번 <span class="sub">다음 차례가 맨 위입니다</span></h2>
+    <table>
+      <thead>
+        <tr><th>순위</th><th>이름</th><th>최근 파견일</th><th>파견 횟수</th><th></th></tr>
+      </thead>
+      <tbody id="rankBody"></tbody>
+    </table>
+
+    <div class="confirm-bar">
+      <div class="who">다음 차례: <b id="nextName">-</b></div>
+      <button class="btn-primary" id="confirmNextBtn">오늘 날짜로 파견 확정</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>파견 이력</h2>
+    <table>
+      <thead>
+        <tr><th>날짜</th><th>이름</th><th>비고</th><th></th></tr>
+      </thead>
+      <tbody id="histBody"></tbody>
+    </table>
+    <div id="histEmpty" class="hist-empty" style="display:none;">아직 파견 이력이 없습니다.</div>
+  </div>
+
+  <div class="card">
+    <h2>구성원 관리</h2>
+    <table>
+      <thead><tr><th>순서</th><th>이름</th><th></th></tr></thead>
+      <tbody id="memberBody"></tbody>
+    </table>
+    <div class="foot-actions">
+      <input type="text" id="newMemberName" placeholder="새 구성원 이름" style="flex:1; border:1px solid #e2e8f0; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;" />
+      <button class="btn-ghost btn-sm" id="addMemberBtn">추가</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>백업</h2>
+    <div class="foot-actions" style="justify-content:flex-start;">
+      <button class="btn-ghost btn-sm" id="exportBtn">내보내기 (클립보드로 복사)</button>
+      <button class="btn-ghost btn-sm" id="importBtn">가져오기</button>
+      <button class="btn-danger btn-sm" id="resetBtn">전체 초기화</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = "supportDutyRotationV1";
+
+  function loadState() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      try { return JSON.parse(raw); } catch (e) { /* fall through to default */ }
+    }
+    return {
+      members: [
+        { id: "m1", name: "성헌" },
+        { id: "m2", name: "예린" },
+        { id: "m3", name: "기동" },
+        { id: "m4", name: "동민" },
+        { id: "m5", name: "태순" },
+      ],
+      history: [], // { date: "YYYY-MM-DD", memberId, note }
+    };
+  }
+
+  let state = loadState();
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+
+  // 각 구성원의 최근 파견일/횟수 계산
+  function memberStats(memberId) {
+    const entries = state.history.filter(h => h.memberId === memberId);
+    const count = entries.length;
+    const lastDate = entries.reduce((max, h) => (!max || h.date > max) ? h.date : max, null);
+    return { count, lastDate };
+  }
+
+  // LRU 기준 정렬: 최근 파견일이 오래된(또는 없는) 사람이 먼저. 동률이면 원래 등록 순서.
+  function rankedMembers() {
+    return state.members
+      .map((m, idx) => ({ ...m, idx, ...memberStats(m.id) }))
+      .sort((a, b) => {
+        const aKey = a.lastDate || "";
+        const bKey = b.lastDate || "";
+        if (aKey !== bKey) return aKey < bKey ? -1 : 1;
+        return a.idx - b.idx;
+      });
+  }
+
+  function render() {
+    const ranked = rankedMembers();
+
+    // 순번 테이블
+    const rankBody = document.getElementById("rankBody");
+    rankBody.innerHTML = "";
+    ranked.forEach((m, i) => {
+      const tr = document.createElement("tr");
+      if (i === 0) tr.className = "next-row";
+      tr.innerHTML = `
+        <td><span class="rank-badge">${i + 1}</span></td>
+        <td>${escapeHtml(m.name)} ${i === 0 ? '<span class="pill next">다음</span>' : ""}</td>
+        <td>${m.lastDate || "—"}</td>
+        <td>${m.count}회</td>
+        <td class="row-actions">
+          <button class="btn-ghost btn-sm" data-record="${m.id}">이 사람으로 기록</button>
+        </td>`;
+      rankBody.appendChild(tr);
+    });
+
+    document.getElementById("nextName").textContent = ranked.length ? ranked[0].name : "-";
+
+    // 이력 테이블 (최신순)
+    const histBody = document.getElementById("histBody");
+    const histEmpty = document.getElementById("histEmpty");
+    const sortedHistory = [...state.history].sort((a, b) => {
+      if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+      return a.id < b.id ? 1 : (a.id > b.id ? -1 : 0);
+    });
+    histBody.innerHTML = "";
+    if (sortedHistory.length === 0) {
+      histEmpty.style.display = "block";
+    } else {
+      histEmpty.style.display = "none";
+      sortedHistory.forEach(h => {
+        const m = state.members.find(mm => mm.id === h.memberId);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${h.date}</td>
+          <td>${m ? escapeHtml(m.name) : "(삭제된 구성원)"}</td>
+          <td>${escapeHtml(h.note || "")}</td>
+          <td class="row-actions"><button class="btn-danger btn-sm" data-undo="${h.id}">되돌리기</button></td>`;
+        histBody.appendChild(tr);
+      });
+    }
+
+    // 구성원 관리 테이블
+    const memberBody = document.getElementById("memberBody");
+    memberBody.innerHTML = "";
+    state.members.forEach((m, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${escapeHtml(m.name)}</td>
+        <td class="row-actions"><button class="btn-danger btn-sm" data-remove="${m.id}">삭제</button></td>`;
+      memberBody.appendChild(tr);
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function recordDispatch(memberId, note) {
+    state.history.push({
+      id: "h" + Date.now() + Math.random().toString(36).slice(2, 7),
+      date: todayStr(),
+      memberId,
+      note: note || "",
+    });
+    saveState();
+    render();
+  }
+
+  document.getElementById("confirmNextBtn").addEventListener("click", () => {
+    const ranked = rankedMembers();
+    if (!ranked.length) return;
+    recordDispatch(ranked[0].id, "");
+  });
+
+  document.getElementById("rankBody").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-record]");
+    if (!btn) return;
+    recordDispatch(btn.dataset.record, "");
+  });
+
+  document.getElementById("histBody").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-undo]");
+    if (!btn) return;
+    if (!confirm("이 파견 기록을 삭제할까요?")) return;
+    state.history = state.history.filter(h => h.id !== btn.dataset.undo);
+    saveState();
+    render();
+  });
+
+  document.getElementById("memberBody").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-remove]");
+    if (!btn) return;
+    if (!confirm("이 구성원을 삭제할까요? (과거 이력은 유지됩니다)")) return;
+    state.members = state.members.filter(m => m.id !== btn.dataset.remove);
+    saveState();
+    render();
+  });
+
+  document.getElementById("addMemberBtn").addEventListener("click", () => {
+    const input = document.getElementById("newMemberName");
+    const name = input.value.trim();
+    if (!name) return;
+    state.members.push({ id: "m" + Date.now(), name });
+    input.value = "";
+    saveState();
+    render();
+  });
+  document.getElementById("newMemberName").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("addMemberBtn").click();
+  });
+
+  document.getElementById("exportBtn").addEventListener("click", async () => {
+    const json = JSON.stringify(state, null, 2);
+    try {
+      await navigator.clipboard.writeText(json);
+      alert("클립보드에 복사되었습니다. 안전한 곳에 붙여넣어 보관하세요.");
+    } catch (e) {
+      prompt("아래 내용을 복사해서 보관하세요:", json);
+    }
+  });
+
+  document.getElementById("importBtn").addEventListener("click", () => {
+    const json = prompt("내보내기 한 JSON 내용을 붙여넣으세요:");
+    if (!json) return;
+    try {
+      const parsed = JSON.parse(json);
+      if (!Array.isArray(parsed.members) || !Array.isArray(parsed.history)) throw new Error("형식 오류");
+      state = parsed;
+      saveState();
+      render();
+    } catch (e) {
+      alert("가져오기에 실패했습니다. JSON 형식을 확인하세요.");
+    }
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (!confirm("모든 파견 이력을 초기화할까요? 구성원 목록은 유지됩니다.")) return;
+    state.history = [];
+    saveState();
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>
